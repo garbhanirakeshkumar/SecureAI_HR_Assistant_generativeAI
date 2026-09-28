@@ -50,3 +50,29 @@ class SecurityAuditLog(models.Model):
 
     def __str__(self):
         return f"{self.event_type} - {self.risk_level}"
+
+class HRDocument(models.Model):
+    title = models.CharField(max_length=255)
+    file = models.FileField(upload_to="hr_documents/")
+    uploaded_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="uploaded_hr_documents"
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+
+class HRDocumentChunk(models.Model):
+    document = models.ForeignKey(
+        HRDocument,
+        on_delete=models.CASCADE,
+        related_name="chunks"
+    )
+    content = models.TextField()
+    embedding = models.JSONField()
+
+    def __str__(self):
+        return f"{self.document.title} - Chunk {self.id}"

@@ -1,5 +1,10 @@
 from django.contrib import admin
-from .models import SecurityAuditLog, UserProfile
+from .models import (
+    SecurityAuditLog,
+    UserProfile,
+    HRDocument,
+    HRDocumentChunk,
+)
 
 
 @admin.register(SecurityAuditLog)
@@ -40,4 +45,34 @@ class UserProfileAdmin(admin.ModelAdmin):
         "user__email",
         "employee_id",
         "department",
+    )
+
+
+@admin.register(HRDocument)
+class HRDocumentAdmin(admin.ModelAdmin):
+    list_display = (
+        "title",
+        "uploaded_by",
+        "uploaded_at",
+    )
+
+    search_fields = (
+        "title",
+    )
+
+    list_filter = (
+        "uploaded_at",
+    )
+
+
+@admin.register(HRDocumentChunk)
+class HRDocumentChunkAdmin(admin.ModelAdmin):
+    list_display = (
+        "document",
+        "id",
+    )
+
+    search_fields = (
+        "content",
+        "document__title",
     )

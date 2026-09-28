@@ -5,20 +5,29 @@ from google import genai
 
 from .semantic_search import search_policies
 
+
+# =========================================================
+# CONFIGURATION
+# =========================================================
+
 load_dotenv()
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not API_KEY:
-    raise ValueError("GEMINI_API_KEY is missing from .env")
+    raise ValueError("GEMINI_API_KEY is missing in .env")
 
-client = genai.Client(api_key=API_KEY)
+client = genai.Client(
+    api_key=API_KEY
+)
 
-# Use a current Gemini model
 MODEL_NAME = "gemini-3.5-flash-lite"
 
 
-# Questions that should be answered as normal conversation
+# =========================================================
+# CASUAL CONVERSATION
+# =========================================================
+
 CASUAL_PATTERNS = [
     "hello",
     "hi",
@@ -38,6 +47,11 @@ CASUAL_PATTERNS = [
 
 
 def is_casual_question(question):
+    """
+    Check whether the user message
+    is a casual conversation.
+    """
+
     question = question.lower().strip()
 
     return any(
@@ -47,6 +61,10 @@ def is_casual_question(question):
 
 
 def generate_casual_answer(question):
+    """
+    Generate a short response for
+    casual conversations.
+    """
 
     prompt = f"""
 You are SecureAI HR Assistant.
@@ -57,6 +75,7 @@ User message:
 {question}
 
 Reply naturally, politely, and briefly.
+
 Do not invent HR policies.
 """
 
@@ -72,52 +91,122 @@ Do not invent HR policies.
         return "I could not generate a response."
 
     except Exception as e:
-        print("Gemini casual response error:", e)
-        return "Sorry, I am unable to respond right now. Please try again."
+        print(
+            "Gemini casual response error:",
+            e
+        )
 
+        return (
+            "Sorry, I am unable to respond right now. "
+            "Please try again."
+        )
+
+
+# =========================================================
+# HR RAG ANSWER
+# =========================================================
 
 def generate_hr_answer(question):
+    """
+    Generate an HR answer using only
+    documents uploaded by HR.
+    """
 
     try:
 
-        # Handle casual conversation separately
+        # -------------------------------------------------
+        # Casual conversation
+        # -------------------------------------------------
+
         if is_casual_question(question):
             return generate_casual_answer(question)
 
-        # Search HR policies
-        results = search_policies(question, top_k=3)
+        # -------------------------------------------------
+        # Search HR-uploaded documents
+        # -------------------------------------------------
 
-        context = "\n\n".join(
-            [
-                f"Policy: {result['filename']}\n"
-                f"{result['content']}"
-                for result in results
-            ]
+        results = search_policies(
+            question,
+            top_k=3
         )
 
-        # If no policy was found
-        if not context.strip():
-            return "I could not find this information in the available HR policies."
+        # -------------------------------------------------
+        # No relevant documents
+        # -------------------------------------------------
+
+        if not results:
+            return (
+                "I could not find this information "
+                "in the available HR policies."
+            )
+
+        # -------------------------------------------------
+        # Build context
+        # -------------------------------------------------
+
+        context_parts = []
+
+        for result in results:
+            context_parts.append(
+                f"""
+Document: {result['filename']}
+
+Content:
+{result['content']}
+"""
+            )
+
+        context = "\n".join(context_parts)
+
+        # -------------------------------------------------
+        # Gemini prompt
+        # -------------------------------------------------
 
         prompt = f"""
 You are SecureAI HR Assistant.
 
-Answer the user's question using ONLY the HR policy information below.
+Answer the user's question using ONLY the
+HR policy information provided below.
 
 HR POLICY INFORMATION:
+
 {context}
 
 USER QUESTION:
+
 {question}
 
 Rules:
+
 1. Answer clearly and professionally.
-2. Use only the provided HR policy information for HR-related facts.
-3. Do not invent company rules.
-4. If the policy does not contain the answer, say:
-   "I could not find this information in the available HR policies."
+
+2. Use only the provided HR policy information
+   for HR-related facts.
+
+3. Do not invent company rules, benefits,
+   leave balances, salary rules, or procedures.
+
+4. If the provided documents do not contain
+   enough information to answer the question,
+   say exactly:
+
+"I could not find this information in the
+available HR policies."
+
 5. Keep the answer concise.
+
+6. Do not mention similarity scores,
+   embeddings, vector databases, or RAG
+   implementation details.
+
+7. If multiple documents contain relevant
+   information, combine the information
+   accurately.
 """
+
+        # -------------------------------------------------
+        # Generate Gemini response
+        # -------------------------------------------------
 
         response = client.models.generate_content(
             model=MODEL_NAME,
@@ -130,10 +219,12 @@ Rules:
         return "I could not generate a response."
 
     except Exception as e:
-
-        print("Gemini HR response error:", e)
+        print(
+            "Gemini HR response error:",
+            e
+        )
 
         return (
-            "Sorry, I am unable to process your request right now. "
-            "Please try again."
+            "Sorry, I am unable to process your "
+            "request right now. Please try again."
         )

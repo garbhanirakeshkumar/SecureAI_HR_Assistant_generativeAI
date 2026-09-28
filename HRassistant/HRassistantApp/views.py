@@ -1,12 +1,19 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from .response_validator import validate_response
+
 
 from .security_scanner import scan_prompt, mask_sensitive_data
+from .document_processor import extract_text_from_file
+from .document_ingestion import process_document
 from .gemini_rag import generate_hr_answer
-from .response_validator import validate_response
-from .models import SecurityAuditLog, UserProfile
+from .models import (
+    SecurityAuditLog,
+    UserProfile,
+    HRDocument,
+)
 
 
 # =========================================================
@@ -623,3 +630,109 @@ def add_employee(request):
             "error": error
         }
     )
+
+@login_required(login_url="user_login")
+def hr_documents(request):
+    if request.user.profile.role != "HR":
+        return redirect("employee_dashboard")
+
+    error = None
+    success = None
+
+    if request.method == "POST":
+        title = request.POST.get("title", "").strip()
+        uploaded_file = request.FILES.get("file")
+
+        if not title:
+            error = "Please enter a document title."
+
+        elif not uploaded_file:
+            error = "Please select a document."
+
+        else:
+            allowed_extensions = [".pdf", ".docx", ".txt", ".md"]
+
+            filename = uploaded_file.name.lower()
+
+            if not any(filename.endswith(ext) for ext in allowed_extensions):
+                error = (
+                    "Unsupported file type. "
+                    "Only PDF, DOCX, TXT, and MD files are allowed."
+                )
+
+            else:
+                try:
+                    document = HRDocument.objects.create(
+                        title=title,
+                        file=uploaded_file,
+                        uploaded_by=request.user
+                    )
+
+                    file_path = document.file.path
+
+                    extracted_text = extract_text_from_file(
+                        file_path
+                    )
+
+                    if not extracted_text.strip():
+                        document.delete()
+
+                        error = (
+                            "Could not extract text from this document."
+                        )
+
+                    else:
+                        chunk_count = process_document(
+                            document,
+                            extracted_text
+                        )
+
+                        if chunk_count == 0:
+                            document.delete()
+
+                            error = (
+                                "No usable text was found in the document."
+                            )
+
+                        else:
+                            success = (
+                                f"Document uploaded successfully. "
+                                f"{chunk_count} chunks created."
+                            )
+
+                except Exception as e:
+                    print("Document upload error:", e)
+
+                    if "document" in locals():
+                        document.delete()
+
+                    error = (
+                        "An error occurred while processing "
+                        "the document."
+                    )
+
+    documents = HRDocument.objects.order_by("-uploaded_at")
+
+    return render(
+        request,
+        "hr_documents.html",
+        {
+            "documents": documents,
+            "error": error,
+            "success": success,
+        }
+    )
+@login_required(login_url="user_login")
+def delete_hr_document(request, document_id):
+    if request.user.profile.role != "HR":
+        return redirect("employee_dashboard")
+
+    if request.method == "POST":
+        document = get_object_or_404(
+            HRDocument,
+            id=document_id
+        )
+
+        document.delete()
+
+    return redirect("hr_documents")

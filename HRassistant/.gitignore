@@ -26,3 +26,6 @@ db.sqlite3
 # OS files
 .DS_Store
 Thumbs.db
+
+# Uploaded HR documents
+hr_documents/

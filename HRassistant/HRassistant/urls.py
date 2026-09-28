@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from HRassistantApp.views import (
     home,
@@ -17,6 +19,8 @@ from HRassistantApp.views import (
     employee_list,
     add_employee,
     profile,
+    hr_documents,
+    delete_hr_document,
 )
 
 
@@ -109,4 +113,20 @@ urlpatterns = [
         low_risk_logs,
         name="low_risk_logs"
     ),
+    path(
+    "hr/documents/",
+    hr_documents,
+    name="hr_documents"
+),
+path(
+    "hr/documents/delete/<int:document_id>/",
+    delete_hr_document,
+    name="delete_hr_document"
+),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )

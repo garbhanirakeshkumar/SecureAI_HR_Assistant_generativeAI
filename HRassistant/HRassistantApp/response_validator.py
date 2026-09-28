@@ -2,6 +2,7 @@ import re
 
 
 def validate_response(response):
+
     warnings = []
 
     # Check for email addresses
@@ -30,12 +31,20 @@ def validate_response(response):
     ]
 
     for pattern in sensitive_patterns:
-        if re.search(pattern, response, re.IGNORECASE):
-            warnings.append("Sensitive information detected")
+
+        if re.search(
+            pattern,
+            response,
+            re.IGNORECASE
+        ):
+            warnings.append(
+                "Sensitive information detected"
+            )
             break
 
     # Return validation result
     if warnings:
+
         return {
             "is_safe": False,
             "warnings": warnings,
