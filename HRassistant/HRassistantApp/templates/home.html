@@ -1,141 +1,179 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>SecureAI HR Assistant</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f3ff;
-            margin: 0;
-            padding: 0;
-        }
+    <meta charset="UTF-8">
 
-        .container {
-            width: 80%;
-            margin: 50px auto;
-            text-align: center;
-        }
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-        h1 {
-            color: #4c1d95;
-            font-size: 36px;
-        }
+    <title>SecureAI | Home</title>
 
-        .subtitle {
-            color: #6b7280;
-            font-size: 18px;
-            margin-bottom: 40px;
-        }
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-        .cards {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .card {
-            background: white;
-            width: 220px;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(76, 29, 149, 0.15);
-            border-top: 4px solid #ea580c;
-        }
-
-        .card h2 {
-            color: #7c3aed;
-            font-size: 20px;
-        }
-
-        .card p {
-            color: #666;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 10px 18px;
-            background: #7c3aed;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            margin-top: 10px;
-        }
-
-        .btn:hover {
-            background: #5b21b6;
-        }
-
-        .logout {
-            display: inline-block;
-            margin-top: 35px;
-            color: #ea580c;
-            text-decoration: none;
-        }
-
-        .logout:hover {
-            color: #c2410c;
-        }
-    </style>
 </head>
 
 <body>
 
+<!-- =========================
+     HOME PAGE
+========================== -->
+
+<main class="main" style="margin-left: 0;">
+
     <div class="container">
 
-        <h1>SecureAI HR Assistant</h1>
+        <!-- HEADER -->
 
-        <p class="subtitle">
-            Secure HR Assistance with AI Security Features
-        </p>
+        <div class="profile-header">
 
-        <div class="cards">
+            <h1>
+                Welcome to SecureAI 🔐
+            </h1>
 
-            <div class="card">
-                <h2>HR Chatbot</h2>
+            <p>
+                AI-powered HR assistance with built-in security
+                and privacy protection.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             FEATURES
+        ========================== -->
+
+        <div class="security-grid">
+
+            <!-- HR CHATBOT -->
+
+            <div class="security-card low">
+
+                <h3>🤖 HR Assistant</h3>
 
                 <p>
-                    Get answers to common HR questions.
+                    Get answers to common HR questions
+                    and company policy-related queries
+                    using AI-powered assistance.
                 </p>
 
-                <a href="{% url 'hr_chatbot' %}" class="btn">
-                    Open Chatbot
+                <br>
+
+                <a href="{% url 'user_login' %}"
+                   class="btn">
+                    Login to Continue →
                 </a>
+
             </div>
 
-            <div class="card">
-                <h2>Security Scanner</h2>
+
+            <!-- SECURITY SCANNER -->
+
+            <div class="security-card medium">
+
+                <h3>🔍 AI Security Scanner</h3>
 
                 <p>
-                    Detect suspicious instructions and protect data.
+                    Detect suspicious instructions,
+                    prompt-injection attempts and
+                    potentially sensitive information.
                 </p>
 
-                <a href="{% url 'security_scanner' %}" class="btn">
-                    Scan Message
+                <br>
+
+                <a href="{% url 'user_login' %}"
+                   class="btn">
+                    Login to Continue →
                 </a>
+
             </div>
 
-            <div class="card">
-                <h2>Security Dashboard</h2>
+
+            <!-- SECURITY DASHBOARD -->
+
+            <div class="security-card high">
+
+                <h3>🛡 Security Monitoring</h3>
 
                 <p>
-                    Monitor security events and audit logs.
+                    Monitor security events, risk levels
+                    and audit logs through the SecureAI
+                    security dashboard.
                 </p>
 
-                <a href="{% url 'security_dashboard' %}" class="btn">
-                    View Dashboard
+                <br>
+
+                <a href="{% url 'user_login' %}"
+                   class="btn">
+                    Login to Continue →
                 </a>
+
             </div>
 
         </div>
 
-        <a href="{% url 'user_logout' %}" class="logout">
-            Logout
-        </a>
+
+        <!-- =========================
+             SECURITY FEATURES
+        ========================== -->
+
+        <div class="card notice-spacing">
+
+            <h2>
+                Secure by Design
+            </h2>
+
+            <p>
+                SecureAI combines HR assistance with
+                security controls such as prompt-injection
+                detection, PII protection, RAG-based company
+                policy assistance and AI response validation.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             LOGIN
+        ========================== -->
+
+        <div class="card"
+             style="text-align: center;">
+
+            <h2>
+                Already have an account?
+            </h2>
+
+            <p>
+                Login to access your SecureAI portal.
+            </p>
+
+            <br>
+
+            <a href="{% url 'user_login' %}"
+               class="btn">
+                Login
+            </a>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+
+            SecureAI
+            • AI-Assisted HR Support
+            • Secure by Design
+
+        </div>
 
     </div>
 
+</main>
+
 </body>
+
 </html>

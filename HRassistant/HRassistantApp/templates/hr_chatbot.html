@@ -1,222 +1,374 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>SecureAI HR Chatbot</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f3ff;
-            margin: 0;
-            padding: 0;
-        }
+    <meta charset="UTF-8">
 
-        .container {
-            width: 600px;
-            max-width: 90%;
-            margin: 50px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(76, 29, 149, 0.15);
-        }
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-        h1 {
-            text-align: center;
-            color: #4c1d95;
-        }
+    <title>SecureAI | HR Assistant</title>
 
-        h2 {
-            text-align: center;
-            color: #ea580c;
-        }
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #c4b5fd;
-            border-radius: 8px;
-            resize: vertical;
-            box-sizing: border-box;
-        }
-
-        textarea:focus {
-            outline: none;
-            border: 2px solid #7c3aed;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #7c3aed;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background: #5b21b6;
-        }
-
-        .response {
-            margin-top: 25px;
-            padding: 15px;
-            background: #fff7ed;
-            border-left: 5px solid #ea580c;
-            border-radius: 8px;
-        }
-
-        .validation {
-            margin-top: 15px;
-            padding: 15px;
-            background: #f0fdf4;
-            border-left: 5px solid #16a34a;
-            border-radius: 8px;
-        }
-
-        .risk-result {
-            margin-top: 15px;
-            padding: 15px;
-            background: #fefce8;
-            border-left: 5px solid #eab308;
-            border-radius: 8px;
-        }
-
-        .back {
-            display: block;
-            text-align: center;
-            margin-top: 25px;
-            color: #7c3aed;
-            text-decoration: none;
-        }
-
-        .back:hover {
-            color: #ea580c;
-        }
-    </style>
 </head>
 
 <body>
 
-    <div class="container">
+<!-- =========================
+     SIDEBAR
+========================== -->
 
-        <h1>SecureAI HR Assistant</h1>
-        <h2>HR Chatbot</h2>
+<aside class="sidebar">
 
-        <form method="POST">
+    <div class="logo">
+        Secure<span>AI</span>
+    </div>
 
-            {% csrf_token %}
+    <nav class="nav">
 
-            <textarea
-                name="message"
-                rows="5"
-                placeholder="Ask your HR question..."
-                required
-            ></textarea>
+        {% if request.user.profile.role == "HR" %}
 
-            <br><br>
+            <a href="{% url 'hr_dashboard' %}"
+               class="nav-link">
+                <span class="icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
 
-            <button type="submit">
-                Ask HR Assistant
-            </button>
+            <a href="{% url 'profile' %}"
+               class="nav-link">
+                <span class="icon">👤</span>
+                <span>My Profile</span>
+            </a>
 
-        </form>
+            <a href="{% url 'employee_list' %}"
+               class="nav-link">
+                <span class="icon">👥</span>
+                <span>All Employees</span>
+            </a>
 
+            <a href="{% url 'add_employee' %}"
+               class="nav-link">
+                <span class="icon">➕</span>
+                <span>Add Employee</span>
+            </a>
 
-        {% if response %}
+            <a href="{% url 'security_dashboard' %}"
+               class="nav-link">
+                <span class="icon">🛡</span>
+                <span>Security Dashboard</span>
+            </a>
 
-            <div class="response">
+            <a href="{% url 'security_scanner' %}"
+               class="nav-link">
+                <span class="icon">🔍</span>
+                <span>Security Scanner</span>
+            </a>
 
-                <h3>Assistant Response</h3>
+        {% else %}
 
-                <p>{{ response }}</p>
+            <a href="{% url 'employee_dashboard' %}"
+               class="nav-link">
+                <span class="icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
 
-            </div>
-
-
-            {% if scan_result %}
-
-                <div class="risk-result">
-
-                    <h3>Security Scan Result</h3>
-
-                    <p>
-                        <strong>Risk Level:</strong>
-                        {{ scan_result.risk_level }}
-                    </p>
-
-                    <p>
-                        <strong>Message:</strong>
-                        {{ scan_result.message }}
-                    </p>
-
-                    {% if scan_result.matched_rules %}
-
-                        <p>
-                            <strong>Matched Rules:</strong>
-                        </p>
-
-                        <ul>
-
-                            {% for rule in scan_result.matched_rules %}
-
-                                <li>{{ rule }}</li>
-
-                            {% endfor %}
-
-                        </ul>
-
-                    {% endif %}
-
-                </div>
-
-            {% endif %}
-
-
-            {% if validation %}
-
-                <div class="validation">
-
-                    <h3>Security Validation</h3>
-
-                    <p>
-                        <strong>Safe:</strong>
-                        {{ validation.is_safe }}
-                    </p>
-
-                    <p>{{ validation.message }}</p>
-
-                    {% if validation.warnings %}
-
-                        <h4>Security Warnings:</h4>
-
-                        <ul>
-
-                            {% for warning in validation.warnings %}
-
-                                <li>{{ warning }}</li>
-
-                            {% endfor %}
-
-                        </ul>
-
-                    {% endif %}
-
-                </div>
-
-            {% endif %}
+            <a href="{% url 'profile' %}"
+               class="nav-link">
+                <span class="icon">👤</span>
+                <span>My Profile</span>
+            </a>
 
         {% endif %}
 
-
-        <a href="{% url 'home' %}" class="back">
-            Back to Home
+        <a href="{% url 'hr_chatbot' %}"
+           class="nav-link active">
+            <span class="icon">🤖</span>
+            <span>HR Assistant</span>
         </a>
+
+        <a href="{% url 'user_logout' %}"
+           class="nav-link logout">
+            <span class="icon">↪</span>
+            <span>Logout</span>
+        </a>
+
+    </nav>
+
+</aside>
+
+
+<!-- =========================
+     MAIN CONTENT
+========================== -->
+
+<main class="main">
+
+    <div class="container">
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>SecureAI HR Assistant</h1>
+
+                <p>
+                    Ask questions about company HR policies
+                    and get AI-powered assistance.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             CHAT CONTAINER
+        ========================== -->
+
+        <div class="chat-container">
+
+            <div class="chat-box">
+
+                <!-- CHAT HEADER -->
+
+                <div class="card">
+
+                    <h2>🤖 HR Chatbot</h2>
+
+                    <p>
+                        Ask questions related to company
+                        HR policies and workplace guidelines.
+                    </p>
+
+                </div>
+
+
+                <!-- =========================
+                     QUESTION FORM
+                ========================== -->
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <div class="form-group">
+
+                        <label for="message">
+                            Your Question
+                        </label>
+
+                        <textarea
+                            id="message"
+                            name="message"
+                            placeholder="Ask your HR question..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+                    <button type="submit">
+                        Ask HR Assistant
+                    </button>
+
+                </form>
+
+
+                <!-- INFO -->
+
+                <div class="alert alert-info"
+                     style="margin-top: 18px;">
+
+                    Ask questions related to company HR
+                    policies and workplace guidelines.
+
+                </div>
+
+
+                {% if response %}
+
+                <!-- =========================
+                     AI RESPONSE
+                ========================== -->
+
+                <div class="response-box">
+
+                    <h3>🤖 Assistant Response</h3>
+
+                    <p>
+                        {{ response }}
+                    </p>
+
+                </div>
+
+
+                <!-- =========================
+                     SECURITY SCAN
+                ========================== -->
+
+                {% if scan_result %}
+
+                    {% if scan_result.risk_level == "High" %}
+
+                        <div class="warning-box">
+
+                    {% elif scan_result.risk_level == "Medium" %}
+
+                        <div class="warning-box">
+
+                    {% else %}
+
+                        <div class="scan-result">
+
+                    {% endif %}
+
+                            <h3>
+                                🛡 Security Scan Result
+                            </h3>
+
+                            <p>
+                                <strong>Risk Level:</strong>
+
+                                {% if scan_result.risk_level == "High" %}
+
+                                    <span class="risk risk-high">
+                                        {{ scan_result.risk_level }}
+                                    </span>
+
+                                {% elif scan_result.risk_level == "Medium" %}
+
+                                    <span class="risk risk-medium">
+                                        {{ scan_result.risk_level }}
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="risk risk-low">
+                                        {{ scan_result.risk_level }}
+                                    </span>
+
+                                {% endif %}
+
+                            </p>
+
+                            <p>
+                                <strong>Message:</strong>
+                                {{ scan_result.message }}
+                            </p>
+
+
+                            {% if scan_result.matched_rules %}
+
+                                <p>
+                                    <strong>Detected Rules:</strong>
+                                </p>
+
+                                <ul>
+
+                                    {% for rule in scan_result.matched_rules %}
+
+                                        <li>
+                                            {{ rule }}
+                                        </li>
+
+                                    {% endfor %}
+
+                                </ul>
+
+                            {% endif %}
+
+                        </div>
+
+                {% endif %}
+
+
+                <!-- =========================
+                     RESPONSE VALIDATION
+                ========================== -->
+
+                {% if validation %}
+
+                    {% if validation.is_safe %}
+
+                        <div class="alert alert-success"
+                             style="margin-top: 18px;">
+
+                            <h3>
+                                ✓ Security Validation Passed
+                            </h3>
+
+                            <p>
+                                {{ validation.message }}
+                            </p>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="warning-box">
+
+                            <h3>
+                                ⚠ Security Validation Warning
+                            </h3>
+
+                            <p>
+                                {{ validation.message }}
+                            </p>
+
+
+                            {% if validation.warnings %}
+
+                                <h4>
+                                    Security Warnings:
+                                </h4>
+
+                                <ul>
+
+                                    {% for warning in validation.warnings %}
+
+                                        <li>
+                                            {{ warning }}
+                                        </li>
+
+                                    {% endfor %}
+
+                                </ul>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endif %}
+
+                {% endif %}
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             FOOTER
+        ========================== -->
+
+        <div class="footer">
+
+            SecureAI HR Assistant
+            • AI-Assisted HR Support
+            • Secure by Design
+
+        </div>
 
     </div>
 
+</main>
+
 </body>
+
 </html>

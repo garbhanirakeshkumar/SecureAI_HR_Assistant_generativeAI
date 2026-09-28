@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Security Logs</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            Secure<span>AI</span>
+        </div>
+
+        <nav class="nav">
+
+            <a href="{% url 'hr_dashboard' %}" class="nav-link">
+                <span class="icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{% url 'profile' %}" class="nav-link">
+                <span class="icon">👤</span>
+                <span>My Profile</span>
+            </a>
+
+            <a href="{% url 'employee_list' %}" class="nav-link">
+                <span class="icon">👥</span>
+                <span>All Employees</span>
+            </a>
+
+            <a href="{% url 'add_employee' %}" class="nav-link">
+                <span class="icon">➕</span>
+                <span>Add Employee</span>
+            </a>
+
+            <a href="{% url 'security_dashboard' %}" class="nav-link active">
+                <span class="icon">🛡</span>
+                <span>Security Dashboard</span>
+            </a>
+
+            <a href="{% url 'security_scanner' %}" class="nav-link">
+                <span class="icon">🔍</span>
+                <span>Security Scanner</span>
+            </a>
+
+            <a href="{% url 'hr_chatbot' %}" class="nav-link">
+                <span class="icon">🤖</span>
+                <span>HR Assistant</span>
+            </a>
+
+            <a href="{% url 'user_logout' %}" class="nav-link logout">
+                <span class="icon">↪</span>
+                <span>Logout</span>
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <div class="container">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+
+                <div>
+                    <h1>All Security Events</h1>
+                    <p>View and monitor all recorded security events.</p>
+                </div>
+
+                <a
+                    href="{% url 'security_dashboard' %}"
+                    class="btn btn-secondary"
+                >
+                    ← Security Dashboard
+                </a>
+
+            </div>
+
+
+            <!-- SECURITY LOG TABLE -->
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Event Type</th>
+                            <th>Risk Level</th>
+                            <th>Message</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for log in logs %}
+
+                        <tr>
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+                            <td>
+                                {{ log.event_type }}
+                            </td>
+
+                            <td>
+
+                                {% if log.risk_level == "High" %}
+
+                                    <span class="risk risk-high">
+                                        {{ log.risk_level }}
+                                    </span>
+
+                                {% elif log.risk_level == "Medium" %}
+
+                                    <span class="risk risk-medium">
+                                        {{ log.risk_level }}
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="risk risk-low">
+                                        {{ log.risk_level }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ log.message }}
+                            </td>
+
+                            <td>
+                                {{ log.created_at }}
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <h3>No Security Events</h3>
+                                    <p>No security events have been recorded yet.</p>
+                                </div>
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SecureAI | All Employees</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+
+<body>
+
+<!-- =========================
+     SIDEBAR
+========================== -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        Secure<span>AI</span>
+    </div>
+
+    <nav class="nav">
+
+        <a href="{% url 'hr_dashboard' %}"
+           class="nav-link">
+            <span class="icon">⌂</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="{% url 'profile' %}"
+           class="nav-link">
+            <span class="icon">👤</span>
+            <span>My Profile</span>
+        </a>
+
+        <a href="{% url 'employee_list' %}"
+           class="nav-link active">
+            <span class="icon">👥</span>
+            <span>All Employees</span>
+        </a>
+
+        <a href="{% url 'add_employee' %}"
+           class="nav-link">
+            <span class="icon">➕</span>
+            <span>Add Employee</span>
+        </a>
+
+        <a href="{% url 'security_dashboard' %}"
+           class="nav-link">
+            <span class="icon">🛡</span>
+            <span>Security Dashboard</span>
+        </a>
+
+        <a href="{% url 'security_scanner' %}"
+           class="nav-link">
+            <span class="icon">🔍</span>
+            <span>Security Scanner</span>
+        </a>
+
+        <a href="{% url 'hr_chatbot' %}"
+           class="nav-link">
+            <span class="icon">🤖</span>
+            <span>HR Assistant</span>
+        </a>
+
+        <a href="{% url 'user_logout' %}"
+           class="nav-link logout">
+            <span class="icon">↪</span>
+            <span>Logout</span>
+        </a>
+
+    </nav>
+
+</aside>
+
+
+<!-- =========================
+     MAIN CONTENT
+========================== -->
+
+<main class="main">
+
+    <div class="container">
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>All Employees</h1>
+
+                <p>
+                    Manage and view all employees registered in SecureAI.
+                </p>
+
+            </div>
+
+            <a href="{% url 'add_employee' %}"
+               class="btn">
+                ➕ Add Employee
+            </a>
+
+        </div>
+
+
+        <!-- =========================
+             EMPLOYEE TABLE
+        ========================== -->
+
+        {% if employees %}
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>Employee ID</th>
+
+                        <th>Username</th>
+
+                        <th>Email</th>
+
+                        <th>Department</th>
+
+                        <th>Designation</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for employee in employees %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {% if employee.employee_id %}
+                                {{ employee.employee_id }}
+                            {% else %}
+                                Not assigned
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ employee.user.username }}
+                        </td>
+
+                        <td>
+                            {% if employee.user.email %}
+                                {{ employee.user.email }}
+                            {% else %}
+                                Not provided
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if employee.department %}
+                                {{ employee.department }}
+                            {% else %}
+                                Not assigned
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if employee.designation %}
+                                {{ employee.designation }}
+                            {% else %}
+                                Not assigned
+                            {% endif %}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <!-- =========================
+             EMPTY STATE
+        ========================== -->
+
+        <div class="card">
+
+            <div class="empty-state">
+
+                <h3>No Employees Found</h3>
+
+                <p>
+                    No employees have been added yet.
+                </p>
+
+                <br>
+
+                <a href="{% url 'add_employee' %}"
+                   class="btn">
+                    ➕ Add First Employee
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- =========================
+             BACK BUTTON
+        ========================== -->
+
+        <div class="form-actions">
+
+            <a href="{% url 'hr_dashboard' %}"
+               class="btn btn-secondary">
+                ← Back to HR Dashboard
+            </a>
+
+        </div>
+
+
+        <!-- =========================
+             FOOTER
+        ========================== -->
+
+        <div class="footer">
+
+            SecureAI HR Portal
+            • Employee Management
+            • Secure by Design
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SecureAI | Employee Dashboard</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+<!-- =========================
+     SIDEBAR
+========================== -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        Secure<span>AI</span>
+    </div>
+
+    <nav class="nav">
+
+        <a href="{% url 'employee_dashboard' %}"
+           class="nav-link active">
+            <span class="icon">⌂</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="{% url 'profile' %}"
+           class="nav-link">
+            <span class="icon">👤</span>
+            <span>My Profile</span>
+        </a>
+
+        <a href="{% url 'hr_chatbot' %}"
+           class="nav-link">
+            <span class="icon">🤖</span>
+            <span>HR Assistant</span>
+        </a>
+
+        <a href="{% url 'user_logout' %}"
+           class="nav-link logout">
+            <span class="icon">↪</span>
+            <span>Logout</span>
+        </a>
+
+    </nav>
+
+</aside>
+
+
+<!-- =========================
+     MAIN CONTENT
+========================== -->
+
+<main class="main">
+
+    <div class="container">
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <div>
+                <h1>Employee Dashboard</h1>
+
+                <p>
+                    Welcome back, {{ request.user.username }}.
+                    Access your profile and HR assistance from here.
+                </p>
+            </div>
+
+            <a href="{% url 'profile' %}"
+               class="btn btn-secondary">
+                My Profile
+            </a>
+
+        </div>
+
+
+        <!-- =========================
+             WELCOME CARD
+        ========================== -->
+
+        <div class="profile-header">
+
+            <h1>
+                Welcome to SecureAI 👋
+            </h1>
+
+            <p>
+                SecureAI provides a secure employee portal where
+                you can view your account information and interact
+                with the AI-powered HR Assistant for company policy
+                and HR-related questions.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             EMPLOYEE INFORMATION
+        ========================== -->
+
+        <div class="page-header">
+
+            <div>
+                <h2>Your Information</h2>
+
+                <p>
+                    Basic information associated with your employee account.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="profile-grid">
+
+            <!-- EMPLOYEE ID -->
+
+            <div class="info-box">
+
+                <div class="label">
+                    Employee ID
+                </div>
+
+                <div class="value">
+
+                    {% if request.user.profile.employee_id %}
+                        {{ request.user.profile.employee_id }}
+                    {% else %}
+                        Not assigned
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- DEPARTMENT -->
+
+            <div class="info-box">
+
+                <div class="label">
+                    Department
+                </div>
+
+                <div class="value">
+
+                    {% if request.user.profile.department %}
+                        {{ request.user.profile.department }}
+                    {% else %}
+                        Not assigned
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- DESIGNATION -->
+
+            <div class="info-box">
+
+                <div class="label">
+                    Designation
+                </div>
+
+                <div class="value">
+
+                    {% if request.user.profile.designation %}
+                        {{ request.user.profile.designation }}
+                    {% else %}
+                        Not assigned
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- ACCOUNT -->
+
+            <div class="info-box">
+
+                <div class="label">
+                    Account Type
+                </div>
+
+                <div class="value">
+                    Employee
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             QUICK ACCESS
+        ========================== -->
+
+        <div class="page-header"
+             style="margin-top: 30px;">
+
+            <div>
+                <h2>Quick Access</h2>
+
+                <p>
+                    Available employee services.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="security-grid">
+
+
+            <!-- PROFILE -->
+
+            <div class="security-card low">
+
+                <h3>👤 My Profile</h3>
+
+                <p>
+                    View your employee information,
+                    department, designation and account details.
+                </p>
+
+                <br>
+
+                <a href="{% url 'profile' %}"
+                   class="btn">
+                    View Profile →
+                </a>
+
+            </div>
+
+
+            <!-- HR ASSISTANT -->
+
+            <div class="security-card low">
+
+                <h3>🤖 HR Assistant</h3>
+
+                <p>
+                    Ask the AI-powered HR Assistant about
+                    company policies and HR-related questions.
+                </p>
+
+                <br>
+
+                <a href="{% url 'hr_chatbot' %}"
+                   class="btn">
+                    Open HR Assistant →
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             SECURITY NOTICE
+        ========================== -->
+
+        <div class="card"
+             style="margin-top: 25px;">
+
+            <h3>
+                🔐 SecureAI Security
+            </h3>
+
+            <p>
+                Your account is protected by SecureAI security
+                controls including prompt-injection detection,
+                sensitive-data protection and AI response validation.
+            </p>
+
+            <br>
+
+            <p>
+                Security monitoring and employee-management
+                functions are restricted to authorized HR users.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             FOOTER
+        ========================== -->
+
+        <div class="footer">
+
+            SecureAI Employee Portal
+            • AI-Assisted HR Support
+            • Secure by Design
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

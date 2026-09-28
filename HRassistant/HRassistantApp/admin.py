@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SecurityAuditLog
+from .models import SecurityAuditLog, UserProfile
 
 
 @admin.register(SecurityAuditLog)
@@ -17,4 +17,27 @@ class SecurityAuditLogAdmin(admin.ModelAdmin):
 
     search_fields = (
         "message",
+    )
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "role",
+        "employee_id",
+        "department",
+        "designation",
+    )
+
+    list_filter = (
+        "role",
+        "department",
+    )
+
+    search_fields = (
+        "user__username",
+        "user__email",
+        "employee_id",
+        "department",
     )

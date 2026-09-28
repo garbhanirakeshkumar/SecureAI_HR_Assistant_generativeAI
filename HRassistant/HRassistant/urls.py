@@ -1,29 +1,112 @@
-"""
-URL configuration for HRassistant project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path
-from HRassistantApp.views import home,security_scanner,hr_chatbot,security_dashboard,user_login,user_logout
+
+from HRassistantApp.views import (
+    home,
+    security_scanner,
+    hr_chatbot,
+    security_dashboard,
+    user_login,
+    user_logout,
+    high_risk_logs,
+    medium_risk_logs,
+    low_risk_logs,
+    all_security_logs,
+    hr_dashboard,
+    employee_dashboard,
+    employee_list,
+    add_employee,
+    profile,
+)
+
 
 urlpatterns = [
+
+    # Admin
     path("admin/", admin.site.urls),
+
+    # Home
     path("", home, name="home"),
-    path("security-scanner/", security_scanner, name="security_scanner"),
-    path("hr-chatbot/", hr_chatbot, name="hr_chatbot"),
-    path("security-dashboard/", security_dashboard, name="security_dashboard"),
+
+    # Authentication
     path("login/", user_login, name="user_login"),
     path("logout/", user_logout, name="user_logout"),
+
+    # Dashboards
+    path(
+        "hr-dashboard/",
+        hr_dashboard,
+        name="hr_dashboard"
+    ),
+
+    path(
+        "employee-dashboard/",
+        employee_dashboard,
+        name="employee_dashboard"
+    ),
+
+    # Profile
+    path(
+        "profile/",
+        profile,
+        name="profile"
+    ),
+
+    # Employee Management
+    path(
+        "employees/",
+        employee_list,
+        name="employee_list"
+    ),
+
+    path(
+        "employees/add/",
+        add_employee,
+        name="add_employee"
+    ),
+
+    # AI HR Assistant
+    path(
+        "hr-chatbot/",
+        hr_chatbot,
+        name="hr_chatbot"
+    ),
+
+    # Security
+    path(
+        "security-scanner/",
+        security_scanner,
+        name="security_scanner"
+    ),
+
+    path(
+        "security-dashboard/",
+        security_dashboard,
+        name="security_dashboard"
+    ),
+
+    # Security Logs
+    path(
+        "all-security-logs/",
+        all_security_logs,
+        name="all_security_logs"
+    ),
+
+    path(
+        "high-risk-logs/",
+        high_risk_logs,
+        name="high_risk_logs"
+    ),
+
+    path(
+        "medium-risk-logs/",
+        medium_risk_logs,
+        name="medium_risk_logs"
+    ),
+
+    path(
+        "low-risk-logs/",
+        low_risk_logs,
+        name="low_risk_logs"
+    ),
 ]

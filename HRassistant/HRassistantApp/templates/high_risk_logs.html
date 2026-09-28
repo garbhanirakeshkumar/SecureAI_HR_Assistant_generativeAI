@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SecureAI | High Risk Security Logs</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+
+<body>
+
+<!-- =========================
+     SIDEBAR
+========================== -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        Secure<span>AI</span>
+    </div>
+
+    <nav class="nav">
+
+        <a href="{% url 'hr_dashboard' %}"
+           class="nav-link">
+            <span class="icon">⌂</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="{% url 'profile' %}"
+           class="nav-link">
+            <span class="icon">👤</span>
+            <span>My Profile</span>
+        </a>
+
+        <a href="{% url 'employee_list' %}"
+           class="nav-link">
+            <span class="icon">👥</span>
+            <span>All Employees</span>
+        </a>
+
+        <a href="{% url 'add_employee' %}"
+           class="nav-link">
+            <span class="icon">➕</span>
+            <span>Add Employee</span>
+        </a>
+
+        <a href="{% url 'security_dashboard' %}"
+           class="nav-link active">
+            <span class="icon">🛡</span>
+            <span>Security Dashboard</span>
+        </a>
+
+        <a href="{% url 'security_scanner' %}"
+           class="nav-link">
+            <span class="icon">🔍</span>
+            <span>Security Scanner</span>
+        </a>
+
+        <a href="{% url 'hr_chatbot' %}"
+           class="nav-link">
+            <span class="icon">🤖</span>
+            <span>HR Assistant</span>
+        </a>
+
+        <a href="{% url 'user_logout' %}"
+           class="nav-link logout">
+            <span class="icon">↪</span>
+            <span>Logout</span>
+        </a>
+
+    </nav>
+
+</aside>
+
+
+<!-- =========================
+     MAIN CONTENT
+========================== -->
+
+<main class="main">
+
+    <div class="container">
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>High Risk Security Events</h1>
+
+                <p>
+                    Review security events classified as high risk.
+                </p>
+
+            </div>
+
+            <a href="{% url 'security_dashboard' %}"
+               class="btn btn-secondary">
+                ← Security Dashboard
+            </a>
+
+        </div>
+
+
+        <!-- =========================
+             HIGH RISK TABLE
+        ========================== -->
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>Event Type</th>
+
+                        <th>Risk Level</th>
+
+                        <th>Message</th>
+
+                        <th>Date & Time</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for log in logs %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {{ log.event_type }}
+                        </td>
+
+                        <td>
+
+                            <span class="risk risk-high">
+                                {{ log.risk_level }}
+                            </span>
+
+                        </td>
+
+                        <td>
+                            {{ log.message }}
+                        </td>
+
+                        <td>
+                            {{ log.created_at }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="5">
+
+                            <div class="empty-state">
+
+                                <h3>No High Risk Events</h3>
+
+                                <p>
+                                    No high-risk security events have been recorded.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- =========================
+             BACK BUTTON
+        ========================== -->
+
+        <div class="form-actions">
+
+            <a href="{% url 'security_dashboard' %}"
+               class="btn btn-secondary">
+                ← Back to Security Dashboard
+            </a>
+
+        </div>
+
+
+        <!-- =========================
+             FOOTER
+        ========================== -->
+
+        <div class="footer">
+
+            SecureAI Security Center
+            • High Risk Monitoring
+            • Secure by Design
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+
+</html>

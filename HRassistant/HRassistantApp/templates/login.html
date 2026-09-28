@@ -1,107 +1,137 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>SecureAI Login</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f3ff;
-            margin: 0;
-        }
+    <meta charset="UTF-8">
 
-        .container {
-            width: 350px;
-            max-width: 85%;
-            margin: 100px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(76, 29, 149, 0.15);
-        }
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-        h1 {
-            text-align: center;
-            color: #4c1d95;
-            font-size: 25px;
-        }
+    <title>SecureAI | Login</title>
 
-        h2 {
-            text-align: center;
-            color: #ea580c;
-        }
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-        label {
-            color: #4c1d95;
-            font-weight: bold;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 8px;
-            border: 1px solid #c4b5fd;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-
-        input:focus {
-            outline: none;
-            border: 2px solid #7c3aed;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #7c3aed;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background: #5b21b6;
-        }
-
-        .error {
-            color: red;
-            text-align: center;
-            margin-top: 15px;
-        }
-    </style>
 </head>
 
 <body>
 
-<div class="container">
+<!-- =========================
+     LOGIN PAGE
+========================== -->
 
-    <h1>SecureAI HR Assistant</h1>
-    <h2>Login</h2>
+<main class="login-page">
 
-    <form method="POST">
-        {% csrf_token %}
+    <div class="login-card">
 
-        <label>Username:</label>
-        <input type="text" name="username" required>
+        <!-- LOGO -->
 
-        <br><br>
+        <div class="logo"
+             style="text-align: center; color: #241b2f; margin-bottom: 20px;">
 
-        <label>Password:</label>
-        <input type="password" name="password" required>
+            Secure<span>AI</span>
 
-        <br><br>
+        </div>
 
-        <button type="submit">Login</button>
-    </form>
 
-    {% if error %}
-        <p class="error">{{ error }}</p>
-    {% endif %}
+        <!-- TITLE -->
 
-</div>
+        <h1>
+            Welcome Back
+        </h1>
+
+        <p class="subtitle">
+            SecureAI HR Assistant
+        </p>
+
+
+        <!-- ERROR MESSAGE -->
+
+        {% if error %}
+
+            <div class="alert alert-error">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+
+        <!-- LOGIN FORM -->
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your username"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button type="submit"
+                    style="width: 100%;">
+
+                Login
+
+            </button>
+
+        </form>
+
+
+        <!-- SECURITY NOTICE -->
+
+        <div class="alert alert-info"
+             style="margin-top: 20px;">
+
+            🔐 Secure login protected by SecureAI security controls.
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+
+            SecureAI
+            • Secure HR Platform
+
+        </div>
+
+    </div>
+
+</main>
 
 </body>
+
 </html>

@@ -1,241 +1,508 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>AI Security Dashboard</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f3ff;
-            margin: 0;
-            padding: 30px;
-        }
+    <meta charset="UTF-8">
 
-        .container {
-            max-width: 1100px;
-            margin: auto;
-        }
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-        h1 {
-            text-align: center;
-            color: #4c1d95;
-        }
+    <title>SecureAI | Security Dashboard</title>
 
-        h2 {
-            color: #ea580c;
-        }
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-        .top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logout {
-            color: #ea580c;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .cards {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin: 25px 0;
-        }
-
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            flex: 1;
-            min-width: 150px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(76, 29, 149, 0.15);
-            border-top: 4px solid #7c3aed;
-        }
-
-        .card h3 {
-            color: #6b7280;
-        }
-
-        .card p {
-            font-size: 28px;
-            font-weight: bold;
-            color: #4c1d95;
-        }
-
-        .table-box {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: #7c3aed;
-            color: white;
-        }
-
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        tr:nth-child(even) {
-            background: #f5f3ff;
-        }
-
-        .back {
-            display: inline-block;
-            margin-top: 25px;
-            color: #7c3aed;
-            text-decoration: none;
-            font-weight: bold;
-        }
-    </style>
 </head>
 
 <body>
 
-<div class="container">
 
-    <div class="top">
-        <h1>SecureAI HR Assistant</h1>
-        <a href="{% url 'user_logout' %}" class="logout">Logout</a>
+<!-- =========================
+     SIDEBAR
+========================== -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        Secure<span>AI</span>
     </div>
 
-    <h2>AI Security Dashboard</h2>
 
-    <div class="cards">
+    <nav class="nav">
 
-        <div class="card">
-            <h3>Total Events</h3>
-            <p>{{ total_events }}</p>
+        <a href="{% url 'hr_dashboard' %}"
+           class="nav-link">
+
+            <span class="icon">🏠</span>
+            HR Dashboard
+
+        </a>
+
+
+        <a href="{% url 'profile' %}"
+           class="nav-link">
+
+            <span class="icon">👤</span>
+            My Profile
+
+        </a>
+
+
+        <a href="{% url 'employee_list' %}"
+           class="nav-link">
+
+            <span class="icon">👥</span>
+            All Employees
+
+        </a>
+
+
+        <a href="{% url 'add_employee' %}"
+           class="nav-link">
+
+            <span class="icon">➕</span>
+            Add Employee
+
+        </a>
+
+
+        <a href="{% url 'security_dashboard' %}"
+           class="nav-link active">
+
+            <span class="icon">🛡️</span>
+            Security Dashboard
+
+        </a>
+
+
+        <a href="{% url 'security_scanner' %}"
+           class="nav-link">
+
+            <span class="icon">🔍</span>
+            Security Scanner
+
+        </a>
+
+
+        <a href="{% url 'hr_chatbot' %}"
+           class="nav-link">
+
+            <span class="icon">🤖</span>
+            HR Assistant
+
+        </a>
+
+
+        <a href="{% url 'user_logout' %}"
+           class="nav-link logout">
+
+            <span class="icon">🚪</span>
+            Logout
+
+        </a>
+
+    </nav>
+
+</aside>
+
+
+
+<!-- =========================
+     MAIN CONTENT
+========================== -->
+
+<main class="main">
+
+    <div class="container">
+
+
+        <!-- HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    AI Security Dashboard
+                </h1>
+
+                <p>
+                    Monitor security events detected by SecureAI.
+                </p>
+
+            </div>
+
         </div>
 
-        <div class="card">
-            <h3>High Risk</h3>
-            <p>{{ high_risk_events }}</p>
+
+
+        <!-- =========================
+             SECURITY SUMMARY
+        ========================== -->
+
+        <div class="security-grid">
+
+
+            <!-- TOTAL EVENTS -->
+
+            <div class="security-card"
+                 onclick="window.location.href='{% url 'all_security_logs' %}'"
+                 style="cursor: pointer;">
+
+                <h3>
+                    Total Events
+                </h3>
+
+                <p style="font-size: 30px;
+                          font-weight: bold;
+                          margin-top: 10px;
+                          color: #7c3aed;">
+
+                    {{ total_events }}
+
+                </p>
+
+                <p>
+                    View all security events
+                </p>
+
+            </div>
+
+
+
+            <!-- HIGH RISK -->
+
+            <div class="security-card high"
+                 onclick="window.location.href='{% url 'high_risk_logs' %}'"
+                 style="cursor: pointer;">
+
+                <h3>
+                    High Risk
+                </h3>
+
+                <p style="font-size: 30px;
+                          font-weight: bold;
+                          margin-top: 10px;
+                          color: #dc2626;">
+
+                    {{ high_risk_events }}
+
+                </p>
+
+                <p>
+                    View high-risk events
+                </p>
+
+            </div>
+
+
+
+            <!-- MEDIUM RISK -->
+
+            <div class="security-card medium"
+                 onclick="window.location.href='{% url 'medium_risk_logs' %}'"
+                 style="cursor: pointer;">
+
+                <h3>
+                    Medium Risk
+                </h3>
+
+                <p style="font-size: 30px;
+                          font-weight: bold;
+                          margin-top: 10px;
+                          color: #f97316;">
+
+                    {{ medium_risk_events }}
+
+                </p>
+
+                <p>
+                    View medium-risk events
+                </p>
+
+            </div>
+
+
+
+            <!-- LOW RISK -->
+
+            <div class="security-card low"
+                 onclick="window.location.href='{% url 'low_risk_logs' %}'"
+                 style="cursor: pointer;">
+
+                <h3>
+                    Low Risk
+                </h3>
+
+                <p style="font-size: 30px;
+                          font-weight: bold;
+                          margin-top: 10px;
+                          color: #22c55e;">
+
+                    {{ low_risk_events }}
+
+                </p>
+
+                <p>
+                    View low-risk events
+                </p>
+
+            </div>
+
         </div>
 
-        <div class="card">
-            <h3>Medium Risk</h3>
-            <p>{{ medium_risk_events }}</p>
+
+
+        <!-- =========================
+             SECURITY CHART
+        ========================== -->
+
+        <div class="card section-spacing">
+
+            <h2>
+                Security Events Overview
+            </h2>
+
+            <div style="height: 350px;">
+
+                <canvas id="securityChart"></canvas>
+
+            </div>
+
         </div>
 
-        <div class="card">
-            <h3>Low Risk</h3>
-            <p>{{ low_risk_events }}</p>
+
+
+        <!-- =========================
+             RECENT SECURITY LOGS
+        ========================== -->
+
+        <div class="table-container">
+
+            <div class="page-header">
+
+                <div>
+
+                    <h2>
+                        Recent Security Logs
+                    </h2>
+
+                    <p>
+                        Latest security activity detected by SecureAI.
+                    </p>
+
+                </div>
+
+                <a href="{% url 'all_security_logs' %}"
+                   class="btn btn-secondary">
+
+                    View All
+
+                </a>
+
+            </div>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Event Type</th>
+
+                        <th>Risk Level</th>
+
+                        <th>Message</th>
+
+                        <th>Date & Time</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for log in recent_logs %}
+
+                    <tr>
+
+                        <td>
+                            {{ log.event_type }}
+                        </td>
+
+
+                        <td>
+
+                            {% if log.risk_level == "High" %}
+
+                                <span class="risk risk-high">
+                                    {{ log.risk_level }}
+                                </span>
+
+                            {% elif log.risk_level == "Medium" %}
+
+                                <span class="risk risk-medium">
+                                    {{ log.risk_level }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="risk risk-low">
+                                    {{ log.risk_level }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+                            {{ log.message }}
+                        </td>
+
+
+                        <td>
+                            {{ log.created_at }}
+                        </td>
+
+                    </tr>
+
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="4">
+
+                            <div class="empty-state">
+
+                                <h3>
+                                    No Security Logs
+                                </h3>
+
+                                <p>
+                                    No security events have been recorded yet.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+
+            SecureAI • AI Security Monitoring
+
         </div>
 
     </div>
 
-    <div class="table-box">
+</main>
 
-        <h2>Recent Security Logs</h2>
 
-        <table>
 
-            <tr>
-                <th>Event Type</th>
-                <th>Risk Level</th>
-                <th>Message</th>
-                <th>Date</th>
-            </tr>
+<!-- =========================
+     CHART.JS
+========================== -->
 
-            {% for log in recent_logs %}
-
-            <tr>
-                <td>{{ log.event_type }}</td>
-                <td>{{ log.risk_level }}</td>
-                <td>{{ log.message }}</td>
-                <td>{{ log.created_at }}</td>
-            </tr>
-
-            {% empty %}
-
-            <tr>
-                <td colspan="4">No security logs found.</td>
-            </tr>
-
-            {% endfor %}
-
-        </table>
-
-    </div>
-
-    <a href="{% url 'home' %}" class="back">Back to Home</a>
-
-</div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
-<canvas id="securityChart"></canvas>
-
 <script>
+
     const ctx = document.getElementById("securityChart");
 
     new Chart(ctx, {
+
         type: "bar",
 
         data: {
+
             labels: [
                 "High Risk",
                 "Medium Risk",
                 "Low Risk"
             ],
 
-            datasets: [{
-                label: "Security Events",
+            datasets: [
 
-                data: [
-                    {{ high_risk_events }},
-                    {{ medium_risk_events }},
-                    {{ low_risk_events }}
-                ],
+                {
 
-                backgroundColor: [
-                    "red",
-                    "orange",
-                    "green"
-                ]
-            }]
+                    label: "Security Events",
+
+                    data: [
+                        {{ high_risk_events }},
+                        {{ medium_risk_events }},
+                        {{ low_risk_events }}
+                    ],
+
+                    backgroundColor: [
+                        "#dc2626",
+                        "#f97316",
+                        "#22c55e"
+                    ],
+
+                    borderWidth: 0
+
+                }
+
+            ]
+
         },
 
+
         options: {
+
             responsive: true,
 
+            maintainAspectRatio: false,
+
             plugins: {
-                title: {
-                    display: true,
-                    text: "Security Events Overview"
-                },
 
                 legend: {
-                    display: true
+                    display: false
                 }
+
             },
 
+
             scales: {
+
                 y: {
+
                     beginAtZero: true,
 
                     ticks: {
                         stepSize: 1
                     }
+
                 }
+
             }
+
         }
+
     });
+
 </script>
 
+
 </body>
+
 </html>

@@ -3,6 +3,10 @@ myenv/
 venv/
 .venv/
 
+myenv312/
+venv/
+env/
+
 # Environment variables
 .env
 .env.*

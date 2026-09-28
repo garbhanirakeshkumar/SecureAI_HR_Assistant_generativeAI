@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SecureAI | HR Dashboard</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+
+<body>
+
+<!-- =========================
+     SIDEBAR
+========================== -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        Secure<span>AI</span>
+    </div>
+
+    <nav class="nav">
+
+        <a href="{% url 'hr_dashboard' %}"
+           class="nav-link active">
+            <span class="icon">⌂</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="{% url 'profile' %}"
+           class="nav-link">
+            <span class="icon">👤</span>
+            <span>My Profile</span>
+        </a>
+
+        <a href="{% url 'employee_list' %}"
+           class="nav-link">
+            <span class="icon">👥</span>
+            <span>All Employees</span>
+        </a>
+
+        <a href="{% url 'add_employee' %}"
+           class="nav-link">
+            <span class="icon">➕</span>
+            <span>Add Employee</span>
+        </a>
+
+        <a href="{% url 'security_dashboard' %}"
+           class="nav-link">
+            <span class="icon">🛡</span>
+            <span>Security Dashboard</span>
+        </a>
+
+        <a href="{% url 'security_scanner' %}"
+           class="nav-link">
+            <span class="icon">🔍</span>
+            <span>Security Scanner</span>
+        </a>
+
+        <a href="{% url 'hr_chatbot' %}"
+           class="nav-link">
+            <span class="icon">🤖</span>
+            <span>HR Assistant</span>
+        </a>
+
+        <a href="{% url 'user_logout' %}"
+           class="nav-link logout">
+            <span class="icon">↪</span>
+            <span>Logout</span>
+        </a>
+
+    </nav>
+
+</aside>
+
+
+<!-- =========================
+     MAIN CONTENT
+========================== -->
+
+<main class="main">
+
+    <div class="container">
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>HR Dashboard</h1>
+
+                <p>
+                    Welcome back, {{ request.user.username }}.
+                    Manage employees and monitor SecureAI security.
+                </p>
+
+            </div>
+
+            <a href="{% url 'profile' %}"
+               class="btn btn-secondary">
+                👤 My Profile
+            </a>
+
+        </div>
+
+
+        <!-- =========================
+             STATISTICS
+        ========================== -->
+
+        <div class="stats">
+
+            <!-- TOTAL EMPLOYEES -->
+
+            <div class="stat-card">
+
+                <div class="label">
+                    Total Employees
+                </div>
+
+                <div class="value">
+                    {{ total_employees }}
+                </div>
+
+                <p>
+                    Registered employee accounts
+                </p>
+
+            </div>
+
+
+            <!-- SECURITY EVENTS -->
+
+            <div class="stat-card">
+
+                <div class="label">
+                    Security Events
+                </div>
+
+                <div class="value">
+                    {{ total_security_events }}
+                </div>
+
+                <p>
+                    Total security events recorded
+                </p>
+
+            </div>
+
+
+            <!-- HIGH RISK -->
+
+            <div class="stat-card">
+
+                <div class="label">
+                    High Risk Events
+                </div>
+
+                <div class="value">
+                    {{ high_risk_events }}
+                </div>
+
+                <p>
+                    Events requiring attention
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             QUICK ACTIONS
+        ========================== -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>Quick Actions</h2>
+
+                <p>
+                    Manage HR operations from one place.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="security-grid">
+
+            <!-- EMPLOYEE MANAGEMENT -->
+
+            <div class="security-card low">
+
+                <h3>👥 Employee Management</h3>
+
+                <p>
+                    View and manage all registered employees.
+                </p>
+
+                <br>
+
+                <a href="{% url 'employee_list' %}"
+                   class="btn">
+                    View Employees →
+                </a>
+
+            </div>
+
+
+            <!-- ADD EMPLOYEE -->
+
+            <div class="security-card low">
+
+                <h3>➕ Add Employee</h3>
+
+                <p>
+                    Create a new employee account and profile.
+                </p>
+
+                <br>
+
+                <a href="{% url 'add_employee' %}"
+                   class="btn">
+                    Add Employee →
+                </a>
+
+            </div>
+
+
+            <!-- SECURITY MONITORING -->
+
+            <div class="security-card medium">
+
+                <h3>🛡 Security Monitoring</h3>
+
+                <p>
+                    Monitor security events and risk levels.
+                </p>
+
+                <br>
+
+                <a href="{% url 'security_dashboard' %}"
+                   class="btn">
+                    Open Security →
+                </a>
+
+            </div>
+
+
+            <!-- HR ASSISTANT -->
+
+            <div class="security-card low">
+
+                <h3>🤖 HR Assistant</h3>
+
+                <p>
+                    Ask questions using the SecureAI HR Assistant.
+                </p>
+
+                <br>
+
+                <a href="{% url 'hr_chatbot' %}"
+                   class="btn">
+                    Open Assistant →
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             SECURITY CENTER
+        ========================== -->
+
+        <div class="page-header"
+             style="margin-top: 30px;">
+
+            <div>
+
+                <h2>SecureAI Security Center</h2>
+
+                <p>
+                    Monitor security events by risk level.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="security-grid">
+
+            <!-- ALL EVENTS -->
+
+            <div class="security-card">
+
+                <h3>📋 All Events</h3>
+
+                <p>
+                    View all recorded security events.
+                </p>
+
+                <br>
+
+                <a href="{% url 'all_security_logs' %}"
+                   class="btn btn-secondary">
+                    View All Events →
+                </a>
+
+            </div>
+
+
+            <!-- HIGH RISK -->
+
+            <div class="security-card high">
+
+                <h3>🔴 High Risk</h3>
+
+                <p>
+                    Review high-risk security events.
+                </p>
+
+                <br>
+
+                <a href="{% url 'high_risk_logs' %}"
+                   class="btn btn-danger">
+                    View High Risk →
+                </a>
+
+            </div>
+
+
+            <!-- MEDIUM RISK -->
+
+            <div class="security-card medium">
+
+                <h3>🟠 Medium Risk</h3>
+
+                <p>
+                    Review medium-risk security events.
+                </p>
+
+                <br>
+
+                <a href="{% url 'medium_risk_logs' %}"
+                   class="btn">
+                    View Medium Risk →
+                </a>
+
+            </div>
+
+
+            <!-- LOW RISK -->
+
+            <div class="security-card low">
+
+                <h3>🟢 Low Risk</h3>
+
+                <p>
+                    Review low-risk security events.
+                </p>
+
+                <br>
+
+                <a href="{% url 'low_risk_logs' %}"
+                   class="btn">
+                    View Low Risk →
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             SECURITY STATUS
+        ========================== -->
+
+        <div class="card"
+             style="margin-top: 25px;">
+
+            <h3>
+                🔐 Security Monitoring Active
+            </h3>
+
+            <p>
+                SecureAI security monitoring is active.
+                Prompt-injection detection, sensitive-data
+                protection and AI response validation are
+                available to protect HR operations.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             FOOTER
+        ========================== -->
+
+        <div class="footer">
+
+            SecureAI HR Security Platform
+            • AI-Assisted HR Management
+            • Secure by Design
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+
+</html>

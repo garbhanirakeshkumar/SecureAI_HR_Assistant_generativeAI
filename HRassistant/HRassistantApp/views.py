@@ -1,25 +1,36 @@
-
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 from .security_scanner import scan_prompt, mask_sensitive_data
-from .hr_chatbot import get_hr_response
+from .gemini_rag import generate_hr_answer
 from .response_validator import validate_response
-from .models import SecurityAuditLog
+from .models import SecurityAuditLog, UserProfile
 
+
+# =========================================================
+# HOME
+# =========================================================
 
 @login_required(login_url="user_login")
 def home(request):
-    return render(request, "home.html")
+    if request.user.profile.role == "HR":
+        return redirect("hr_dashboard")
+    else:
+        return redirect("employee_dashboard")
 
+
+# =========================================================
+# LOGIN
+# =========================================================
 
 def user_login(request):
     error = None
 
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
 
         user = authenticate(
             request,
@@ -29,42 +40,134 @@ def user_login(request):
 
         if user is not None:
             login(request, user)
-            return redirect("security_dashboard")
+
+            if user.profile.role == "HR":
+                return redirect("hr_dashboard")
+            else:
+                return redirect("employee_dashboard")
+
         else:
             error = "Invalid username or password."
 
     return render(
         request,
         "login.html",
-        {"error": error}
+        {
+            "error": error
+        }
     )
 
+
+# =========================================================
+# LOGOUT
+# =========================================================
 
 def user_logout(request):
     logout(request)
     return redirect("user_login")
 
 
+# =========================================================
+# HR DASHBOARD
+# =========================================================
+
+@login_required(login_url="user_login")
+def hr_dashboard(request):
+
+    if request.user.profile.role != "HR":
+        return redirect("employee_dashboard")
+
+    total_employees = UserProfile.objects.filter(
+        role="EMPLOYEE"
+    ).count()
+
+    total_security_events = SecurityAuditLog.objects.count()
+
+    high_risk_events = SecurityAuditLog.objects.filter(
+        risk_level="High"
+    ).count()
+
+    return render(
+        request,
+        "hr_dashboard.html",
+        {
+            "total_employees": total_employees,
+            "total_security_events": total_security_events,
+            "high_risk_events": high_risk_events,
+        }
+    )
+
+
+# =========================================================
+# EMPLOYEE DASHBOARD
+# =========================================================
+
+@login_required(login_url="user_login")
+def employee_dashboard(request):
+
+    if request.user.profile.role != "EMPLOYEE":
+        return redirect("hr_dashboard")
+
+    return render(
+        request,
+        "employee_dashboard.html"
+    )
+
+
+# =========================================================
+# PROFILE
+# =========================================================
+
+@login_required(login_url="user_login")
+def profile(request):
+
+    return render(
+        request,
+        "profile.html",
+        {
+            "profile": request.user.profile
+        }
+    )
+
+
+# =========================================================
+# SECURITY SCANNER
+# HR ONLY
+# =========================================================
+
 @login_required(login_url="user_login")
 def security_scanner(request):
+
+    if request.user.profile.role != "HR":
+        return redirect("employee_dashboard")
+
     result = None
     masked_message = None
 
     if request.method == "POST":
-        message = request.POST.get("message", "")
 
-        result = scan_prompt(message)
-        masked_message = mask_sensitive_data(message)
+        message = request.POST.get(
+            "message",
+            ""
+        ).strip()
 
-        SecurityAuditLog.objects.create(
-            event_type=(
-                "Prompt Injection"
-                if result["is_suspicious"]
-                else "Security Scan"
-            ),
-            message=masked_message,
-            risk_level=result["risk_level"]
-        )
+        if message:
+
+            result = scan_prompt(message)
+
+            masked_message = mask_sensitive_data(
+                message
+            )
+
+            SecurityAuditLog.objects.create(
+                event_type=(
+                    "Suspicious Request"
+                    if result["is_suspicious"]
+                    else "Security Scan"
+                ),
+                message=masked_message,
+                risk_level=result["risk_level"]
+            )
 
     return render(
         request,
@@ -76,48 +179,135 @@ def security_scanner(request):
     )
 
 
+# =========================================================
+# HR CHATBOT
+# AVAILABLE TO HR + EMPLOYEES
+# =========================================================
+
 @login_required(login_url="user_login")
 def hr_chatbot(request):
+
     response = None
     validation = None
     scan_result = None
 
     if request.method == "POST":
-        message = request.POST.get("message", "")
 
-        scan_result = scan_prompt(message)
+        message = request.POST.get(
+            "message",
+            ""
+        ).strip()
 
-        if scan_result["is_suspicious"]:
+        # -------------------------------------------------
+        # 1. Empty input validation
+        # -------------------------------------------------
 
-            masked_message = mask_sensitive_data(message)
-
-            SecurityAuditLog.objects.create(
-                event_type="Prompt Injection",
-                message=masked_message,
-                risk_level=scan_result["risk_level"]
-            )
+        if not message:
 
             response = (
-                "Suspicious instruction detected. "
-                "Please ask a valid HR-related question."
+                "Please enter an HR-related question."
             )
 
-            validation = validate_response(response)
+            validation = validate_response(
+                response
+            )
 
         else:
 
-            response = get_hr_response(message)
-            validation = validate_response(response)
+            # -------------------------------------------------
+            # 2. Scan user input
+            # -------------------------------------------------
 
-            if not validation["is_safe"]:
+            scan_result = scan_prompt(
+                message
+            )
 
-                masked_response = mask_sensitive_data(response)
+            # -------------------------------------------------
+            # 3. Block suspicious requests
+            # -------------------------------------------------
+
+            if scan_result["is_suspicious"]:
+
+                masked_message = mask_sensitive_data(
+                    message
+                )
 
                 SecurityAuditLog.objects.create(
-                    event_type="Unsafe AI Response",
-                    message=masked_response,
-                    risk_level="Medium"
+                    event_type="Suspicious Request",
+                    message=masked_message,
+                    risk_level=scan_result["risk_level"]
                 )
+
+                response = (
+                    "I can't process that request. "
+                    "Please ask a valid HR-related question."
+                )
+
+                validation = validate_response(
+                    response
+                )
+
+            else:
+
+                # -------------------------------------------------
+                # 4. Generate answer using Gemini + RAG
+                # -------------------------------------------------
+
+                try:
+
+                    response = generate_hr_answer(
+                        message
+                    )
+
+                except Exception:
+
+                    response = (
+                        "Sorry, I couldn't generate a "
+                        "response right now. Please try "
+                        "again later or contact HR."
+                    )
+
+                    SecurityAuditLog.objects.create(
+                        event_type="AI Generation Error",
+                        message=(
+                            "Gemini response generation failed."
+                        ),
+                        risk_level="Medium"
+                    )
+
+                # -------------------------------------------------
+                # 5. Validate AI response
+                # -------------------------------------------------
+
+                validation = validate_response(
+                    response
+                )
+
+                # -------------------------------------------------
+                # 6. Block unsafe AI response
+                # -------------------------------------------------
+
+                if not validation["is_safe"]:
+
+                    masked_response = mask_sensitive_data(
+                        response
+                    )
+
+                    SecurityAuditLog.objects.create(
+                        event_type="Unsafe AI Response",
+                        message=masked_response,
+                        risk_level="Medium"
+                    )
+
+                    response = (
+                        "The generated response could not "
+                        "pass security validation. Please "
+                        "contact HR for further assistance."
+                    )
+
+                    validation = validate_response(
+                        response
+                    )
 
     return render(
         request,
@@ -128,21 +318,42 @@ def hr_chatbot(request):
             "scan_result": scan_result,
         }
     )
+
+
+# =========================================================
+# SECURITY DASHBOARD
+# HR ONLY
+# =========================================================
+
 @login_required(login_url="user_login")
 def security_dashboard(request):
+
+    if request.user.profile.role != "HR":
+        return redirect("employee_dashboard")
+
+    # Total security events
+
     total_events = SecurityAuditLog.objects.count()
+
+    # High-risk events
 
     high_risk_events = SecurityAuditLog.objects.filter(
         risk_level="High"
     ).count()
 
+    # Medium-risk events
+
     medium_risk_events = SecurityAuditLog.objects.filter(
         risk_level="Medium"
     ).count()
 
+    # Low-risk events
+
     low_risk_events = SecurityAuditLog.objects.filter(
         risk_level="Low"
     ).count()
+
+    # Latest 10 events
 
     recent_logs = SecurityAuditLog.objects.order_by(
         "-created_at"
@@ -157,5 +368,258 @@ def security_dashboard(request):
             "medium_risk_events": medium_risk_events,
             "low_risk_events": low_risk_events,
             "recent_logs": recent_logs,
+        }
+    )
+
+
+# =========================================================
+# ALL SECURITY LOGS
+# HR ONLY
+# =========================================================
+
+@login_required(login_url="user_login")
+def all_security_logs(request):
+
+    if request.user.profile.role != "HR":
+        return redirect("employee_dashboard")
+
+    logs = SecurityAuditLog.objects.order_by(
+        "-created_at"
+    )
+
+    return render(
+        request,
+        "all_security_logs.html",
+        {
+            "logs": logs
+        }
+    )
+
+
+# =========================================================
+# HIGH-RISK LOGS
+# HR ONLY
+# =========================================================
+
+@login_required(login_url="user_login")
+def high_risk_logs(request):
+
+    if request.user.profile.role != "HR":
+        return redirect("employee_dashboard")
+
+    logs = SecurityAuditLog.objects.filter(
+        risk_level="High"
+    ).order_by(
+        "-created_at"
+    )
+
+    return render(
+        request,
+        "high_risk_logs.html",
+        {
+            "logs": logs
+        }
+    )
+
+
+# =========================================================
+# MEDIUM-RISK LOGS
+# HR ONLY
+# =========================================================
+
+@login_required(login_url="user_login")
+def medium_risk_logs(request):
+
+    if request.user.profile.role != "HR":
+        return redirect("employee_dashboard")
+
+    logs = SecurityAuditLog.objects.filter(
+        risk_level="Medium"
+    ).order_by(
+        "-created_at"
+    )
+
+    return render(
+        request,
+        "medium_risk_logs.html",
+        {
+            "logs": logs
+        }
+    )
+
+
+# =========================================================
+# LOW-RISK LOGS
+# HR ONLY
+# =========================================================
+
+@login_required(login_url="user_login")
+def low_risk_logs(request):
+
+    if request.user.profile.role != "HR":
+        return redirect("employee_dashboard")
+
+    logs = SecurityAuditLog.objects.filter(
+        risk_level="Low"
+    ).order_by(
+        "-created_at"
+    )
+
+    return render(
+        request,
+        "low_risk_logs.html",
+        {
+            "logs": logs
+        }
+    )
+
+
+# =========================================================
+# EMPLOYEE LIST
+# HR ONLY
+# =========================================================
+
+@login_required(login_url="user_login")
+def employee_list(request):
+
+    if request.user.profile.role != "HR":
+        return redirect("employee_dashboard")
+
+    employees = UserProfile.objects.filter(
+        role="EMPLOYEE"
+    ).select_related(
+        "user"
+    )
+
+    return render(
+        request,
+        "employee_list.html",
+        {
+            "employees": employees
+        }
+    )
+
+
+# =========================================================
+# ADD EMPLOYEE
+# HR ONLY
+# =========================================================
+
+@login_required(login_url="user_login")
+def add_employee(request):
+
+    if request.user.profile.role != "HR":
+        return redirect("employee_dashboard")
+
+    error = None
+
+    if request.method == "POST":
+
+        username = request.POST.get(
+            "username",
+            ""
+        ).strip()
+
+        email = request.POST.get(
+            "email",
+            ""
+        ).strip()
+
+        password = request.POST.get(
+            "password",
+            ""
+        )
+
+        employee_id = request.POST.get(
+            "employee_id",
+            ""
+        ).strip()
+
+        department = request.POST.get(
+            "department",
+            ""
+        ).strip()
+
+        designation = request.POST.get(
+            "designation",
+            ""
+        ).strip()
+
+        # -------------------------------------------------
+        # Required field validation
+        # -------------------------------------------------
+
+        if (
+            not username
+            or not email
+            or not password
+            or not employee_id
+        ):
+
+            error = (
+                "Please fill all required fields."
+            )
+
+        # -------------------------------------------------
+        # Username validation
+        # -------------------------------------------------
+
+        elif User.objects.filter(
+            username=username
+        ).exists():
+
+            error = (
+                "Username already exists."
+            )
+
+        # -------------------------------------------------
+        # Employee ID validation
+        # -------------------------------------------------
+
+        elif UserProfile.objects.filter(
+            employee_id=employee_id
+        ).exists():
+
+            error = (
+                "Employee ID already exists."
+            )
+
+        else:
+
+            # -------------------------------------------------
+            # Create Django User
+            # -------------------------------------------------
+
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password
+            )
+
+            # -------------------------------------------------
+            # Signal automatically creates UserProfile
+            # -------------------------------------------------
+
+            profile = user.profile
+
+            profile.role = "EMPLOYEE"
+
+            profile.employee_id = employee_id
+
+            profile.department = department
+
+            profile.designation = designation
+
+            profile.save()
+
+            return redirect(
+                "employee_list"
+            )
+
+    return render(
+        request,
+        "add_employee.html",
+        {
+            "error": error
         }
     )

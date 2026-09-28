@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Low Risk Security Logs | SecureAI</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+
+<body>
+
+<!-- =========================
+     SIDEBAR
+========================== -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        Secure<span>AI</span>
+    </div>
+
+    <nav class="nav">
+
+        <a href="{% url 'hr_dashboard' %}" class="nav-link">
+            <span class="icon">🏠</span>
+            HR Dashboard
+        </a>
+
+        <a href="{% url 'security_dashboard' %}" class="nav-link active">
+            <span class="icon">🛡️</span>
+            Security Dashboard
+        </a>
+
+        <a href="{% url 'all_security_logs' %}" class="nav-link">
+            <span class="icon">📋</span>
+            All Events
+        </a>
+
+        <a href="{% url 'high_risk_logs' %}" class="nav-link">
+            <span class="icon">🔴</span>
+            High Risk
+        </a>
+
+        <a href="{% url 'medium_risk_logs' %}" class="nav-link">
+            <span class="icon">🟠</span>
+            Medium Risk
+        </a>
+
+        <a href="{% url 'low_risk_logs' %}" class="nav-link active">
+            <span class="icon">🟢</span>
+            Low Risk
+        </a>
+
+        <a href="{% url 'profile' %}" class="nav-link">
+            <span class="icon">👤</span>
+            Profile
+        </a>
+
+        <a href="{% url 'user_logout' %}" class="nav-link logout">
+            <span class="icon">🚪</span>
+            Logout
+        </a>
+
+    </nav>
+
+</aside>
+
+
+<!-- =========================
+     MAIN CONTENT
+========================== -->
+
+<main class="main">
+
+    <div class="container">
+
+        <!-- HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    Low Risk Security Events
+                </h1>
+
+                <p>
+                    Review all low-risk security activity recorded by SecureAI.
+                </p>
+
+            </div>
+
+            <a href="{% url 'security_dashboard' %}"
+               class="btn btn-secondary">
+
+                ← Security Dashboard
+
+            </a>
+
+        </div>
+
+
+        <!-- LOG TABLE -->
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>Event Type</th>
+
+                        <th>Risk Level</th>
+
+                        <th>Message</th>
+
+                        <th>Date & Time</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for log in logs %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+
+                        <td>
+                            {{ log.event_type }}
+                        </td>
+
+
+                        <td>
+
+                            <span class="risk risk-low">
+                                {{ log.risk_level }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            {{ log.message }}
+                        </td>
+
+
+                        <td>
+                            {{ log.created_at }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="5">
+
+                            <div class="empty-state">
+
+                                <h3>
+                                    No Low Risk Events
+                                </h3>
+
+                                <p>
+                                    No low-risk security events have been recorded yet.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+
+            SecureAI • Security Monitoring
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+
+</html>

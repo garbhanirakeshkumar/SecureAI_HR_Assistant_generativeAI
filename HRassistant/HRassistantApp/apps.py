@@ -2,4 +2,8 @@ from django.apps import AppConfig
 
 
 class HrassistantappConfig(AppConfig):
-    name = 'HRassistantApp'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "HRassistantApp"
+
+    def ready(self):
+        import HRassistantApp.signals

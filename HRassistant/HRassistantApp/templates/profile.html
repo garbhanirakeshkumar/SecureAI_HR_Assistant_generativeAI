@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SecureAI | My Profile</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+
+<body>
+
+
+<!-- =========================
+     SIDEBAR
+========================== -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        Secure<span>AI</span>
+    </div>
+
+
+    <nav class="nav">
+
+        {% if request.user.profile.role == "HR" %}
+
+            <!-- HR NAVIGATION -->
+
+            <a href="{% url 'hr_dashboard' %}"
+               class="nav-link">
+
+                <span class="icon">🏠</span>
+                HR Dashboard
+
+            </a>
+
+
+            <a href="{% url 'profile' %}"
+               class="nav-link active">
+
+                <span class="icon">👤</span>
+                My Profile
+
+            </a>
+
+
+            <a href="{% url 'employee_list' %}"
+               class="nav-link">
+
+                <span class="icon">👥</span>
+                All Employees
+
+            </a>
+
+
+            <a href="{% url 'add_employee' %}"
+               class="nav-link">
+
+                <span class="icon">➕</span>
+                Add Employee
+
+            </a>
+
+
+            <a href="{% url 'security_dashboard' %}"
+               class="nav-link">
+
+                <span class="icon">🛡️</span>
+                Security Dashboard
+
+            </a>
+
+
+            <a href="{% url 'security_scanner' %}"
+               class="nav-link">
+
+                <span class="icon">🔍</span>
+                Security Scanner
+
+            </a>
+
+
+            <a href="{% url 'hr_chatbot' %}"
+               class="nav-link">
+
+                <span class="icon">🤖</span>
+                HR Assistant
+
+            </a>
+
+
+        {% else %}
+
+            <!-- EMPLOYEE NAVIGATION -->
+
+            <a href="{% url 'employee_dashboard' %}"
+               class="nav-link">
+
+                <span class="icon">🏠</span>
+                Employee Dashboard
+
+            </a>
+
+
+            <a href="{% url 'profile' %}"
+               class="nav-link active">
+
+                <span class="icon">👤</span>
+                My Profile
+
+            </a>
+
+
+            <a href="{% url 'hr_chatbot' %}"
+               class="nav-link">
+
+                <span class="icon">🤖</span>
+                HR Assistant
+
+            </a>
+
+        {% endif %}
+
+
+        <!-- LOGOUT -->
+
+        <a href="{% url 'user_logout' %}"
+           class="nav-link logout">
+
+            <span class="icon">🚪</span>
+            Logout
+
+        </a>
+
+    </nav>
+
+</aside>
+
+
+
+<!-- =========================
+     MAIN CONTENT
+========================== -->
+
+<main class="main">
+
+    <div class="container">
+
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    My Profile
+                </h1>
+
+                <p>
+                    View your SecureAI account and employee information.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================
+             PROFILE HEADER
+        ========================== -->
+
+        <div class="profile-header">
+
+            <h1>
+                {{ request.user.username }}
+            </h1>
+
+            <p>
+                {{ request.user.email|default:"No email address added" }}
+            </p>
+
+            <p>
+                Role:
+                <strong>
+                    {{ request.user.profile.role }}
+                </strong>
+            </p>
+
+        </div>
+
+
+
+        <!-- =========================
+             INFORMATION
+        ========================== -->
+
+        <div class="profile-grid">
+
+
+            <!-- ACCOUNT INFORMATION -->
+
+            <div class="info-box">
+
+                <h3>
+                    Account Information
+                </h3>
+
+
+                <div class="label">
+                    Username
+                </div>
+
+                <div class="value">
+                    {{ request.user.username }}
+                </div>
+
+                <br>
+
+
+                <div class="label">
+                    Email
+                </div>
+
+                <div class="value">
+
+                    {% if request.user.email %}
+
+                        {{ request.user.email }}
+
+                    {% else %}
+
+                        Not provided
+
+                    {% endif %}
+
+                </div>
+
+                <br>
+
+
+                <div class="label">
+                    Account Type
+                </div>
+
+                <div class="value">
+                    {{ request.user.profile.role }}
+                </div>
+
+                <br>
+
+
+                <div class="label">
+                    Account Status
+                </div>
+
+                <div class="value">
+                    Active
+                </div>
+
+            </div>
+
+
+
+            <!-- EMPLOYEE INFORMATION -->
+
+            <div class="info-box">
+
+                <h3>
+                    Employee Information
+                </h3>
+
+
+                <div class="label">
+                    Employee ID
+                </div>
+
+                <div class="value">
+
+                    {% if request.user.profile.employee_id %}
+
+                        {{ request.user.profile.employee_id }}
+
+                    {% else %}
+
+                        Not assigned
+
+                    {% endif %}
+
+                </div>
+
+                <br>
+
+
+                <div class="label">
+                    Department
+                </div>
+
+                <div class="value">
+
+                    {% if request.user.profile.department %}
+
+                        {{ request.user.profile.department }}
+
+                    {% else %}
+
+                        Not assigned
+
+                    {% endif %}
+
+                </div>
+
+                <br>
+
+
+                <div class="label">
+                    Designation
+                </div>
+
+                <div class="value">
+
+                    {% if request.user.profile.designation %}
+
+                        {{ request.user.profile.designation }}
+
+                    {% else %}
+
+                        Not assigned
+
+                    {% endif %}
+
+                </div>
+
+                <br>
+
+
+                <div class="label">
+                    User Role
+                </div>
+
+                <div class="value">
+                    {{ request.user.profile.role }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================
+             SECURITY INFORMATION
+        ========================== -->
+
+        <div class="card section-spacing">
+
+            <h2>
+                🔐 SecureAI Account Protection
+            </h2>
+
+            <p>
+                Your account is protected by SecureAI's
+                authentication and security controls.
+                Access to employee management and security
+                monitoring features is restricted according
+                to your assigned role.
+            </p>
+
+
+            <div class="alert alert-success notice-spacing">
+
+                ✓ Account Active
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================
+             BACK BUTTON
+        ========================== -->
+
+        <div class="form-actions">
+
+            {% if request.user.profile.role == "HR" %}
+
+                <a href="{% url 'hr_dashboard' %}"
+                   class="btn btn-secondary">
+
+                    ← Back to HR Dashboard
+
+                </a>
+
+            {% else %}
+
+                <a href="{% url 'employee_dashboard' %}"
+                   class="btn btn-secondary">
+
+                    ← Back to Employee Dashboard
+
+                </a>
+
+            {% endif %}
+
+        </div>
+
+
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+
+            SecureAI HR Security Platform
+            • Secure by Design
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+
+</html>
